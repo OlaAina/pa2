@@ -67,4 +67,5 @@ int stringContains(char *checkForThis, char *checkInThis){
         return 0;
     }
     free(a);
+    
 }
