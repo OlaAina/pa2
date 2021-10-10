@@ -5,57 +5,47 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+
 int stringContains(char *checkForThis, char *checkInThis);
+void readInto(char *filename, char *checkForThis);
 
 int main(int argc, char const *argv[]) {
-DIR *d;
-struct dirent *dir;
-int n=0;
-int i=0;
+
 char *checkForThis;
 checkForThis=malloc(strlen(argv[1])*sizeof(char));
 strcpy(checkForThis,argv[1]);
-d = opendir("./");
-while((dir = readdir(d)) != NULL) {
-    if ( !strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..") ){
-
-    } 
-    else {
-        n++;
-        }
-}
-rewinddir(d);
-
-char **items;
-items= malloc(n*sizeof(char**));
-while((dir = readdir(d)) != NULL) {
-    if ( !strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..") ) {
-
-    }
-    else {
-        items[i] = (char*) malloc (strlen(dir->d_name)+1);
-        strncpy (items[i],dir->d_name, strlen(dir->d_name) );
-        i++;
-    }
-}
-rewinddir(d);
-
-for(int i=0;i<n;i++){
-    int x= stringContains(checkForThis,items[i]);
-    if(x==1){
-        printf("%s\n",items[i]);
-    }
-}
-
-for(int i=0;i<n;i++){
-    free(items[i]);
-}
-free(items);
+readInto(".",checkForThis);
 free(checkForThis);
-closedir(d);
-return 0;
+return EXIT_SUCCESS;
 }
 
+void readInto(char *basePath, char *checkForThis)
+{
+    DIR *dir;
+    dir = opendir(basePath);
+    struct dirent *dp;
+    int i;
+    char path[1000];
+    if (!dir){
+        return;
+    }
+    while ((dp = readdir(dir)) != NULL)
+    {
+        if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0)
+        {
+            strcpy(path, basePath);
+            strcat(path, "/");
+            strcat(path, dp->d_name);
+            if(stringContains(checkForThis,dp->d_name)==1){
+                    printf("%s\n",path);
+            }
+
+            readInto(path,checkForThis); 
+        }
+    }
+
+    closedir(dir);
+}
 
 int stringContains(char *checkForThis, char *checkInThis){
     char *a;
@@ -66,6 +56,4 @@ int stringContains(char *checkForThis, char *checkInThis){
     else{
         return 0;
     }
-    free(a);
-    
 }

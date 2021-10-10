@@ -1,0 +1,99 @@
+#include <dirent.h>
+#include <stdio.h>
+#include<strings.h>
+#include<string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int stringContains(char *checkForThis, char *checkInThis);
+void readInto(char *filename,char *checkForThis);
+
+int main(int argc, char const *argv[]) {
+DIR *d;
+struct dirent *dir;
+int n=0;
+int i=0;
+char *checkForThis;
+checkForThis=malloc(strlen(argv[1])*sizeof(char));
+strcpy(checkForThis,argv[1]);
+d = opendir("./");
+while((dir = readdir(d)) != NULL) {
+    if ( !strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..") ){
+
+    } 
+    else {
+        n++;
+        }
+}
+rewinddir(d);
+char **items;
+items= malloc(n*sizeof(char**));
+char *checkInThis;
+while((dir = readdir(d)) != NULL) {
+    strcpy(checkInThis,dir->d_name);
+    if ( !strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..") ) {
+
+    }
+    else {
+        int z=stringContains(checkForThis,checkInThis);
+        if(z==1){
+            printf("%s\n",dir->d_name);
+        }
+    }
+    if(dir->d_type==4){
+            readInto(dir->d_name,checkForThis);
+    }
+}
+rewinddir(d);
+free(checkForThis);
+closedir(d);
+return 0;
+}
+
+
+int stringContains(char *checkForThis, char *checkInThis){
+    char *a;
+    a= strstr(checkInThis,checkForThis);
+    if(a){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+    free(a);
+    
+}
+
+void readInto(char *filename,char *checkForThis){
+DIR *d;
+struct dirent *dir;
+int n=0;
+int i=0;
+d = opendir(filename);
+while((dir = readdir(d)) != NULL) {
+    if ( !strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..") ){
+
+    } 
+    else {
+        n++;
+        }
+}
+rewinddir(d);
+char *checkInThis;
+while((dir = readdir(d)) != NULL) {
+    strcpy(checkInThis,dir->d_name);
+    if ( !strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..") ) {
+
+    }
+    else {
+        int z=stringContains(checkForThis,checkInThis);
+        if(z==1){
+            printf("%s",dir->d_name);
+        }
+    }
+    if(dir->d_type==4){
+        readInto(dir->d_name,checkForThis);
+    }
+}
+rewinddir(d);
+}
